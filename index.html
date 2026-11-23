@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, noimageindex">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A tour of Pascal Meier’s museum of games, photography, web projects and graphic design." data-i18n-content="copy.walk-through-pascal-meiers-exhibition-of-games-images-and">
+  <meta name="color-scheme" content="light">
+  <title data-i18n="copy.pascal-meier-the-exhibition">Pascal Meier · Museum</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles/exhibition.css">
+  <link rel="stylesheet" href="styles/museum.css">
+  <script src="src/museum/startup.js"></script>
+  <script type="module" src="src/museum/main.js"></script>
+  <link rel="stylesheet" href="styles/immersive.css">
+  <script type="module" src="src/museum/immersive.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="copy.skip-to-content">Skip to content</a>
+  <header class="site-header">
+    <details class="museum-menu">
+      <summary aria-label="Museum menu" data-i18n-aria-label="copy.museum-menu" aria-controls="museum-menu-panel">☰</summary>
+      <div class="museum-menu-panel" id="museum-menu-panel">
+        <a class="brand" href="#lobby" aria-label="Pascal Meier · Museum entrance" data-i18n-aria-label="copy.pascal-meier-exhibition-home">
+          <span class="brand-name">Pascal Meier</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation" data-i18n-aria-label="copy.main-navigation">
+          <button type="button" data-open-overview="room-list-title" aria-haspopup="dialog" aria-controls="overview-dialog" disabled data-i18n="copy.rooms">Rooms</button>
+          <button type="button" data-open-overview="work-list-title" aria-haspopup="dialog" aria-controls="overview-dialog" disabled data-i18n="copy.all-works">All works</button>
+          <button id="open-about" type="button" aria-haspopup="dialog" aria-controls="about-dialog" disabled data-i18n="copy.about-contact">About me</button>
+          <button id="language-toggle" type="button" lang="de" aria-label="Auf Deutsch wechseln" disabled>DE</button>
+        </nav>
+        <label class="design-control" for="museum-design">
+          <span data-i18n="copy.design">Design</span>
+          <select id="museum-design">
+            <option value="atelier" data-i18n="copy.colourful-atelier">Colourful atelier</option>
+            <option value="walnut" data-i18n="copy.walnut-gallery">Walnut gallery</option>
+            <option value="white-cube" data-i18n="copy.white-cube">White Cube</option>
+            <option value="sci-fi" data-i18n="copy.sci-fi-gallery">Sci-Fi gallery</option>
+            <option value="japanese" data-i18n="copy.japanese-gallery">Japanese gallery</option>
+          </select>
+        </label>
+        <label class="design-control" for="museum-quality">
+          <span data-i18n="copy.graphics-quality">Graphics quality</span>
+          <select id="museum-quality" disabled>
+            <option value="auto" data-i18n="copy.quality-auto">Automatic</option>
+            <option value="low" data-i18n="copy.quality-low">Low</option>
+            <option value="medium" data-i18n="copy.quality-medium">Medium</option>
+            <option value="high" data-i18n="copy.quality-high">High</option>
+          </select>
+          <small class="quality-help" data-i18n="copy.quality-reload">Changing quality reloads the tour.</small>
+        </label>
+        <footer class="site-footer">
+          © Pascal Meier
+          <a href="rechtliches.html#impressum" hreflang="de" data-i18n="copy.legal-notice">Legal notice (in German)</a>
+          <a href="rechtliches.html#datenschutz" hreflang="de" data-i18n="copy.privacy">Privacy notice (in German)</a>
+        </footer>
+      </div>
+    </details>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section id="gallery-stage" class="gallery-stage" aria-label="Museum tour" aria-busy="true" data-layout="hub" data-room="lobby" data-i18n-aria-label="copy.museum-tour">
+      <canvas id="gallery-canvas" aria-hidden="true"></canvas>
+      <div class="mouse-look-control">
+        <button id="mouse-look" type="button" aria-label="Enable mouse look" aria-pressed="false" aria-describedby="mouse-look-status" hidden disabled><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="6"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"></circle></svg><span aria-hidden="true">Look</span></button>
+        <p id="mouse-look-status" role="status" aria-live="polite"></p>
+      </div>
+      <aside class="walk-controls" aria-label="Movement controls" data-i18n-aria-label="copy.controls-title">
+        <div><kbd>W A S D</kbd><span data-i18n="copy.control-move">Move</span></div>
+        <div><kbd>← ↑ ↓ →</kbd><span data-i18n="copy.control-look">Look</span></div>
+        <div class="control-mouse"><kbd data-i18n="copy.control-mouse">Mouse</kbd><span data-i18n="copy.control-look-button">Click “Look” to look around</span></div>
+        <div class="control-mouse"><kbd>Esc</kbd><span data-i18n="copy.control-release">Release mouse</span></div>
+        <div><kbd>Shift</kbd><span data-i18n="copy.control-sprint">Sprint</span></div>
+        <div><kbd data-i18n="copy.control-space">Space</kbd><span data-i18n="copy.control-jump">Jump</span></div>
+        <div><kbd>C</kbd><span data-i18n="copy.control-crouch">Crouch</span></div>
+      </aside>
+      <div id="touch-joystick" class="touch-joystick" role="img" aria-label="Use the joystick to walk. Swipe across the scene to look around." data-i18n-aria-label="copy.touch-controls">
+        <span class="touch-joystick-knob" aria-hidden="true"></span>
+      </div>
+      <div id="museum-loading" class="museum-loading" role="status" aria-live="polite">
+        <div class="museum-loading-panel">
+          <p class="museum-loading-mark" aria-hidden="true"><span></span><span></span><span></span></p>
+          <p class="eyebrow">Pascal Meier</p>
+          <h2 data-i18n="copy.preparing-the-exhibition">Loading the tour…</h2>
+          <p id="museum-loading-hint" class="museum-loading-hint" hidden data-i18n="copy.loading-taking-longer">The tour is still loading. You can already browse the work.</p>
+          <a class="catalogue-link" href="exhibition.html" data-i18n="copy.view-work-without-3d">View the work without 3D</a>
+        </div>
+      </div>
+      <!-- Zugängliche HTML-Steuerelemente ergänzen die räumlichen Beschriftungen. -->
+      <div id="room-heading" class="room-heading">
+        <button id="open-room-sign" class="eyebrow" type="button" aria-haspopup="dialog" aria-controls="sign-dialog" disabled>Lobby</button>
+        <h1 tabindex="-1">Pascal Meier</h1>
+        <p class="room-intro" data-i18n="copy.games-photography-and-digital-projects">Games, photography and digital projects.</p>
+      </div>
+      <div id="work-labels" class="work-labels"></div>
+      <nav id="room-doors" aria-label="Doors to other rooms" hidden data-i18n-aria-label="copy.doors-to-other-rooms"></nav>
+      <button id="previous-room" class="back-sign door-wayfinding" type="button" hidden>
+        <span class="door-direction"><span data-i18n="copy.return-to">Return to</span><span class="door-arrow" aria-hidden="true">←</span></span><strong id="back-room-name"></strong>
+      </button>
+      <div class="gallery-status">
+        <p id="gallery-status" role="alert" hidden data-i18n="copy.preparing-the-exhibition">Loading the tour…</p>
+        <a class="catalogue-link" href="exhibition.html" data-i18n="copy.view-work-without-3d">View the work without 3D</a>
+      </div>
+      <aside id="museum-intro" class="museum-intro" aria-labelledby="museum-intro-title" hidden>
+        <h2 id="museum-intro-title">Pascal Meier</h2>
+        <p data-i18n="copy.choose-a-section-below-click-an-artwork-or-its">Choose a section to start your tour. Open a work to learn more about it.</p>
+        <button id="dismiss-museum-intro" type="button" aria-label="Dismiss welcome message" data-i18n-aria-label="copy.dismiss-welcome"><span aria-hidden="true">×</span></button>
+      </aside>
+      <!-- Die Navigation schwebt über einer zusätzlich sichtbaren Bodenfläche. -->
+      <section class="tour-navigation" aria-label="Exhibition navigation" data-i18n-aria-label="copy.exhibition-navigation">
+        <section id="hall-welcome" aria-label="Tour" hidden>
+          <p class="nav-caption" aria-hidden="true" data-guide-de="Bereich wählen" data-guide-en="Choose a section">Choose a section</p>
+          <nav class="hall-directions" aria-label="Explore by theme">
+            <button type="button" data-category="photos" data-guide-target="photos" data-guide-de="Fotos" data-guide-en="Photos" disabled data-i18n="copy.photos">Photos</button>
+            <button type="button" data-category="games" data-guide-target="animalsoccer" data-guide-de="Games" data-guide-en="Games" disabled data-i18n="copy.games">Games</button>
+            <button type="button" data-category="web-design" data-guide-target="cargonaut" data-guide-de="Webdesign" data-guide-en="Web Design" disabled data-i18n="copy.web-design">Web Design</button>
+            <button type="button" data-category="graphic-design" data-guide-target="visual-communication" data-guide-de="Grafikdesign" data-guide-en="Graphic Design" disabled data-i18n="copy.graphic-design">Graphic Design</button>
+          </nav>
+        </section>
+        <div class="tour-details"></div>
+      </section>
+    </section>
+    <p id="file-notice" class="file-notice" hidden data-i18n-text="0:copy.this-museum-needs-a-local-server-start-the-server">This museum needs a local server. Start the server described in README.md and visit <strong>http://127.0.0.1:8000/</strong>.</p>
+    <noscript><p class="file-notice" data-i18n="copy.please-enable-javascript-to-visit-the-museum">Please enable JavaScript to visit the museum. <a class="catalogue-link" href="exhibition.html" data-i18n="copy.view-work-without-3d">View the work without 3D</a></p></noscript>
+  </main>
+
+  <!-- Die Inhalte kommen aus exhibition.html. Dort müssen sie nur einmal bearbeitet werden. -->
+  <dialog id="work-dialog" aria-labelledby="work-title">
+    <form method="dialog"><button class="close-button" data-i18n="copy.close-project-details">Close project details</button></form>
+    <div class="dialog-scroll" tabindex="0" aria-labelledby="work-title"><div id="work-content"></div></div>
+  </dialog>
+  <dialog id="overview-dialog" aria-labelledby="overview-title">
+    <form method="dialog"><button class="close-button" data-i18n="copy.back-to-the-room">← Back to the room</button></form>
+    <div class="dialog-scroll" tabindex="0" aria-labelledby="overview-title">
+      <h2 id="overview-title" data-i18n="copy.choose-your-own-route">Rooms and works</h2>
+      <div class="overview-layout">
+        <section><h3 id="room-list-title" tabindex="-1" data-i18n="copy.rooms">Rooms</h3><ul id="room-list" class="overview-list room-tree"></ul></section>
+        <section><h3 id="work-list-title" tabindex="-1" data-i18n="copy.all-works">All works</h3><div id="work-list" class="overview-list"></div></section>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="about-dialog" aria-labelledby="about-title">
+    <form method="dialog"><button class="close-button" data-i18n="copy.back-to-the-room">← Back to the room</button></form>
+    <div id="about-content" class="dialog-scroll" tabindex="0" aria-labelledby="about-title"></div>
+  </dialog>
+  <dialog id="sign-dialog" aria-labelledby="sign-title" aria-describedby="sign-description">
+    <form method="dialog"><button class="close-button" autofocus data-i18n="copy.close-sign">Close sign</button></form>
+    <div class="dialog-scroll">
+      <p id="sign-number" class="eyebrow"></p>
+      <h2 id="sign-title"></h2>
+      <p id="sign-description"></p>
+    </div>
+  </dialog>
+</body>
+</html>

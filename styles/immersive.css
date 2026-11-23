@@ -1,0 +1,264 @@
+/* The room occupies the viewport; controls float above it. */
+html, body { height: 100%; overflow: hidden; }
+body { min-height: 0; }
+main { height: 100dvh; flex: none; }
+.gallery-stage, .gallery-stage[data-room="lobby"] { height: 100dvh; min-height: 0 !important; flex: none; width: 100%; }
+.site-header { position: fixed; inset: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) auto auto; z-index: 20; width: auto; min-height: 0; margin: 0; display: block; }
+body:not(:has(.gallery-stage.is-ready)):not(:has(.gallery-stage.has-startup-error)) .site-header { visibility: hidden; }
+.museum-menu > summary { list-style: none; display: grid; place-items: center; width: 46px; height: 46px; margin-left: auto; border: 1px solid #ffffff70; border-radius: 50%; background: #faf8f0dd; box-shadow: 0 2px 15px #27252212; cursor: pointer; font-size: 21px; }
+.museum-menu > summary::-webkit-details-marker { display: none; }
+.museum-menu > summary:focus-visible { outline: 3px solid #aa5834; outline-offset: 4px; }
+.museum-menu[open] > summary { background: #fffdf7; }
+.museum-menu-panel { max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; width: min(300px, calc(100vw - 36px)); margin-top: 10px; padding: 24px; border: 1px solid #ffffff80; border-radius: 16px; background: #faf8f0f5; box-shadow: 0 14px 48px #27252226; backdrop-filter: blur(16px); }
+.museum-menu-panel .brand-name { font-size: 23px; }
+.museum-menu-panel .site-nav { display: flex; flex-direction: column; align-items: stretch; gap: 2px; margin-top: 20px; padding: 0; border: 0; background: none; box-shadow: none; border-radius: 0; }
+.museum-menu-panel .site-nav button { width: 100%; text-align: left; padding: 12px; border-radius: 6px; font-size: 14px; }
+.museum-menu-panel #language-toggle { margin-top: 8px; }
+.design-control { display: grid; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #d7cfc3; color: var(--muted); font-size: 14px; }
+.design-control > span { font-weight: 600; letter-spacing: .04em; }
+.design-control select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #b8afa0; border-radius: 8px; background: #fffdf8; color: var(--ink); font: inherit; cursor: pointer; }
+.design-control select:focus-visible { outline: 3px solid #aa5834; outline-offset: 3px; }
+.quality-help { font-size: 12px; line-height: 1.5; font-weight: 400; }
+.museum-menu-panel .site-footer { margin-top: 20px; padding: 16px 0 0; font-size: 12px; gap: 10px; }
+.gallery-stage[data-room] .tour-navigation { position: absolute; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); padding: 10px 14px; border: 1px solid #ffffff60; border-radius: 14px; background: #faf8f0d9; backdrop-filter: blur(12px); box-shadow: 0 4px 24px #27252212; display: flex; flex-direction: column; gap: 8px; transition: opacity .4s, translate .4s; }
+#hall-welcome, .gallery-stage[data-room="lobby"] #hall-welcome { margin: 0; }
+.hall-directions { border: 0; padding: 0; background: none; gap: 4px; width: auto; }
+.hall-directions button { padding: 9px 16px; font-size: 12px; }
+.tour-navigation .tour-details, .gallery-stage[data-room="lobby"] .tour-details { margin: 0; justify-content: center; }
+.hall-controls { justify-content: center; }
+.hall-controls button { background: transparent; border-color: #514d3826; min-height: 38px; padding: 7px 12px; }
+.gallery-stage[data-room="lobby"] .tour-details { display: none; }
+.museum-idle .tour-navigation:not(:hover):not(:focus-within) { opacity: 0; pointer-events: none; translate: 0 8px; }
+.site-header:has(.museum-menu[open]) ~ main .tour-navigation { opacity: 0; pointer-events: none; }
+@media (hover: none) {
+ body:not(:has(.museum-menu[open])).museum-idle .gallery-stage[data-room="lobby"] .tour-navigation:not(:focus-within) { opacity: 1; pointer-events: auto; translate: none; }
+}
+dialog { z-index: 30; }
+@media (max-width: 600px) {
+ .site-header { top: max(12px, env(safe-area-inset-top)); right: 12px; }
+ .tour-navigation, .gallery-stage[data-room="lobby"] .tour-navigation { bottom: max(12px, env(safe-area-inset-bottom)); padding: 7px; }
+ .hall-directions button { min-height: 44px; padding: 8px 10px; white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .gallery-stage[data-room] .tour-navigation { transition: none; }
+}
+
+:root[data-design="white-cube"] { --paper: #fffaf0; --ink: #292927; --muted: #65635e; --line: #d7d2c9; }
+:root[data-design="white-cube"] .gallery-stage { background: #fdf4e3; }
+:root[data-design="white-cube"] .museum-menu > summary { border-color: #222321; background: #222321; color: #fff4e3; }
+:root[data-design="white-cube"] .museum-menu[open] > summary { background: #454641; }
+:root[data-design="white-cube"] .mouse-look-control button { --look-bg: #222321; --look-border: #222321; --look-ink: #fff4e3; --look-hover: #454641; --look-active: #fffaf0; --look-active-ink: #222321; border-radius: 4px; }
+:root[data-design="white-cube"] .mouse-look-control button:focus-visible { outline-color: #222321; }
+:root[data-design="white-cube"] .walk-controls { border-color:#d1ccc2; border-radius:4px; background:#fffaf0f2; color:#292927; }
+:root[data-design="white-cube"] .museum-menu-panel { border-color: #c9c5bc; border-radius: 4px; background: #fffaf0f5; }
+:root[data-design="white-cube"] .museum-menu-panel .brand-name { color: #33332f; }
+:root[data-design="white-cube"] .museum-menu-panel .site-nav button:hover { background: #ebe8e1; }
+:root[data-design="white-cube"] .gallery-stage[data-room] .tour-navigation { border-color: #d1ccc2; border-radius: 4px; background: #fffaf0e8; box-shadow: 0 4px 20px #27252218; }
+:root[data-design="white-cube"] dialog { border-color: #c9c5bc; border-radius: 5px; background: #fffaf0; }
+:root[data-design="white-cube"] dialog::backdrop { background: #242421a8; }
+:root[data-design="white-cube"] .design-control { border-color: #d1ccc2; }
+:root[data-design="white-cube"] .design-control select { border-color: #aaa69d; border-radius: 4px; background: #fffdf8; }
+
+.walk-controls { position:absolute; z-index:3; top:max(20px, env(safe-area-inset-top)); left:max(20px, env(safe-area-inset-left)); display:grid; gap:5px; padding:10px 12px; border:1px solid #d5b28d; border-radius:14px; background:#fff6e8ed; color:#40362d; box-shadow:0 6px 28px #68482b24; font-size:11px; line-height:1.3; pointer-events:none; }
+.walk-controls div { display:grid; grid-template-columns:68px auto; align-items:center; gap:8px; }
+.walk-controls kbd { padding:3px 4px; border:1px solid currentColor; border-radius:4px; font:600 10px/1.1 Arial,sans-serif; text-align:center; white-space:nowrap; }
+.gallery-stage:not(.is-ready) .walk-controls, .gallery-stage:not(.is-common-hall) .walk-controls, .gallery-stage.has-startup-error .walk-controls { display:none; }
+@media (hover:none), (pointer:coarse) { .walk-controls .control-mouse { display:none; } }
+@media (max-width:900px) { .walk-controls { top:auto; bottom:max(150px, env(safe-area-inset-bottom)); left:16px; } }
+@media (max-height:500px) { .walk-controls { top:12px; bottom:auto; left:12px; grid-template-columns:repeat(2, max-content); max-width:calc(100% - 155px); } }
+@media (max-height:500px) { .gallery-stage:has(.museum-intro:not([hidden])) .walk-controls { top:130px; } }
+@media (max-width:600px) and (max-height:500px) { .walk-controls { grid-template-columns:1fr; max-width:none; } }
+
+.touch-joystick { display:none; --stick-color:#365e5b; --stick-bg:#fff5e6d9; position:absolute; z-index:3; right:max(24px, calc(env(safe-area-inset-right) + 12px)); bottom:max(166px, calc(env(safe-area-inset-bottom) + 154px)); width:100px; height:100px; border:1px solid var(--stick-color); border-radius:50%; background:var(--stick-bg); box-shadow:0 4px 20px #27252225; touch-action:none; user-select:none; }
+.touch-joystick-knob { position:absolute; top:50%; left:50%; width:42px; height:42px; border:1px solid var(--stick-color); border-radius:50%; background:var(--stick-color); opacity:.8; transform:translate(calc(-50% + var(--stick-x, 0px)), calc(-50% + var(--stick-y, 0px))); pointer-events:none; }
+[data-design="walnut"] .touch-joystick { --stick-color:#d7b881; --stick-bg:#352e25e8; }
+[data-design="white-cube"] .touch-joystick { --stick-color:#292927; --stick-bg:#fffaf0e8; }
+[data-design="sci-fi"] .touch-joystick { --stick-color:#087f96; --stick-bg:#edf2f5e8; }
+[data-design="japanese"] .touch-joystick { --stick-color:#31513d; --stick-bg:#faf5e9e8; }
+@media (pointer:coarse) {
+ .walk-controls, .mouse-look-control { display:none; }
+ .gallery-stage.is-ready.is-common-hall:not(.is-travelling):not(.has-startup-error) .touch-joystick { display:block; }
+ .is-common-hall #gallery-canvas, .is-common-hall .hall-display-hit, .is-common-hall .work-label, .is-common-hall #open-room-sign { touch-action:none; }
+ body:has(.museum-menu[open]) .touch-joystick { visibility:hidden; }
+}
+@media (pointer:coarse) and (min-width:601px) and (max-height:500px) { .touch-joystick { bottom:max(24px, calc(env(safe-area-inset-bottom) + 12px)); } }
+
+.museum-intro { position:absolute; z-index:3; left:24px; bottom:135px; width:310px; max-width:calc(100% - 48px); padding:22px; border:1px solid #ffffff90; border-radius:10px; background:#faf8f0f5; box-shadow:0 6px 28px #27252218; color:#30382e; }
+.museum-intro h2 { margin:0 32px 6px 0; font:23px/1.2 Georgia,serif; }
+.museum-intro p { margin:0; font-size:14px; line-height:1.5; }
+.museum-intro button { position:absolute; top:2px; right:2px; width:44px; height:44px; padding:0; border:0; background:transparent; color:var(--clay); font:24px/1 sans-serif; cursor:pointer; }
+body:has(.museum-menu[open]) .museum-intro { visibility:hidden; }
+@media(max-width:900px) {
+ .museum-intro { left:16px; top:max(16px, env(safe-area-inset-top)); bottom:auto; max-width:calc(100% - 90px); max-height:calc(100dvh - 180px); overflow-y:auto; padding:14px 16px; }
+ .gallery-stage:has(.museum-intro:not([hidden])) #room-doors { visibility:hidden; }
+}
+@media (max-width:360px) { .hall-directions { gap:2px; } .hall-directions button { padding-inline:6px; } }
+
+/* A warm atelier palette: tactile paper, coloured tabs and quiet brass edges. */
+:root { --paper:#fff9ef; --ink:#342d28; --muted:#706153; --line:#dfcebb; --clay:#994e3e; --petrol:#365e5b; }
+.museum-menu > summary { border-color:#b9956a66; background:#fff5e6ed; color:var(--petrol); box-shadow:0 3px 16px #68482b1c,inset 0 1px #fffaf1; }
+.museum-menu[open] > summary { background:#f0d2b9; }
+.museum-menu-panel { border-color:#d9bd9b; border-radius:20px 5px 20px 20px; background:#fff7ebf5; box-shadow:0 14px 48px #5b382b26; }
+.museum-menu-panel .brand-name { color:var(--clay); }
+.museum-menu-panel .site-nav button:hover { background:#efd5c5; }
+.museum-menu-panel .site-nav button:focus-visible { outline-color:var(--petrol); }
+.gallery-stage[data-room] .tour-navigation { border-color:#d5b28d99; border-radius:22px; background:#fff6e8ed; box-shadow:0 6px 28px #68482b24,inset 0 1px #fffdf4; }
+.hall-directions button { --tab-ink:#365e5b; --tab-paper:#dce9df; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid transparent; border-radius:14px; color:#40362d; transition:background .18s,border-color .18s; }
+.hall-directions button[data-category="games"] { --tab-ink:#994e3e; --tab-paper:#f0d4be; }
+.hall-directions button[data-category="web-design"] { --tab-ink:#475e80; --tab-paper:#dce4ee; }
+.hall-directions button[data-category="graphic-design"] { --tab-ink:#82516c; --tab-paper:#eddae2; }
+.hall-directions button::before { content:""; flex:none; width:8px; height:8px; border-radius:50%; background:var(--tab-ink); }
+.hall-directions button[data-category="games"]::before { border-radius:5px 5px 1px 1px; }
+.hall-directions button[data-category="web-design"]::before { border-radius:2px; }
+.hall-directions button[data-category="graphic-design"]::before { border-radius:1px; transform:rotate(45deg); }
+.hall-directions button:hover { background:var(--tab-paper); border-color:var(--tab-ink); }
+.hall-directions button[aria-pressed="true"] { background:var(--tab-ink); color:#fffaf0; }
+.hall-directions button[aria-pressed="true"]::before { background:currentColor; }
+.hall-controls button { border-color:#b99b7c66; border-radius:12px; color:var(--petrol); }
+.hall-controls button:hover { background:#e4e9dc; }
+.museum-intro { border:1px solid #d7b393; border-top:4px solid #b96954; border-radius:5px 22px 22px 22px; background:#fff7eaf5; color:var(--ink); box-shadow:0 8px 32px #6c493026; }
+.museum-intro h2 { color:var(--clay); }
+.museum-intro button:hover, .museum-intro button:focus-visible { background:#89755520; }
+dialog { border-color:#d8bb9a; background:var(--paper); }
+dialog::backdrop { background:#3028209c; backdrop-filter:blur(5px); }
+dialog h2 { font-family:Georgia,serif; color:var(--clay); }
+dialog > form { border-bottom:1px solid var(--line); margin-bottom:20px; padding-bottom:16px; background:#f4e6d5; border-radius:15px 15px 0 0; }
+.close-button { color:var(--petrol); }
+.overview-list button:hover { color:var(--clay); background:#f5e5d566; }
+@media(max-width:600px) {
+ .tour-navigation, .gallery-stage[data-room="lobby"] .tour-navigation { border-radius:18px; }
+ .hall-directions button { gap:6px; padding-inline:9px; font-size:12px; border-radius:12px; }
+ .hall-directions button::before { width:6px; height:6px; }
+}
+@media(max-width:420px) {
+ .gallery-stage[data-room] .tour-navigation { width:calc(100% - 32px); }
+ .hall-directions { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); width:100%; }
+}
+@media(max-width:360px) { .hall-directions button { gap:4px; padding-inline:6px; } }
+@media(prefers-reduced-motion:reduce) { .hall-directions button { transition:none; } }
+
+.design-control { margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
+.design-control select { border-color:#baa48a; border-radius:9px; background:#fffaf1; color:#40362d; }
+.design-control select:focus-visible { outline-color:var(--petrol); outline-offset:3px; }
+
+/* Walnut gallery: linen, oiled timber and aged brass. */
+:root[data-design="walnut"] { --paper:#faf5e9; --ink:#302b23; --muted:#6c6354; --line:#d8cbb5; --clay:#655039; --petrol:#365247; }
+[data-design="walnut"] .museum-menu > summary { background:#3c3027f2; color:#eed5a3; border-color:#ac8d56; }
+[data-design="walnut"] .museum-menu[open] > summary { background:#59432f; }
+[data-design="walnut"] .mouse-look-control button { --look-bg:#3c3027f2; --look-border:#ac8d56; --look-ink:#eed5a3; --look-hover:#59432f; --look-active:#d7b881; --look-active-ink:#352a1e; border-radius:6px; }
+[data-design="walnut"] .museum-menu-panel { border-color:#a68a5a; border-radius:12px; color:#f4ead7; background:repeating-linear-gradient(92deg,#ffffff02 0 1px,transparent 1px 5px),linear-gradient(110deg,#493829f5,#30291ff5); box-shadow:0 18px 50px #211a1740; }
+[data-design="walnut"] .museum-menu-panel .brand-name { color:#e5c58e; }
+[data-design="walnut"] .museum-menu-panel .site-nav button { color:#f4ead7; border-color:#b59b6d66; }
+[data-design="walnut"] .museum-menu-panel .site-nav button:hover { background:#c6a66c26; }
+[data-design="walnut"] .museum-menu-panel .site-nav button:focus-visible,
+[data-design="walnut"] .design-control select:focus-visible { outline-color:#daba80; }
+[data-design="walnut"] .museum-menu-panel .site-footer,
+[data-design="walnut"] .museum-menu-panel .design-control { color:#d9cdb7; border-color:#ae946345; }
+[data-design="walnut"] .design-control select { background:#f3ead9; border-color:#b69b6e; color:#3c3027; }
+[data-design="walnut"] .walk-controls { border-color:#b39762; border-radius:10px; background:#352e25f2; color:#f5ecdc; }
+[data-design="walnut"] .gallery-stage[data-room] .tour-navigation { background:#352e25ed; border-color:#b39762; border-radius:12px; box-shadow:0 6px 28px #30201230,inset 0 1px #d0b88633; }
+[data-design="walnut"] .hall-directions button { --tab-ink:#d7b881; --tab-paper:#5c4b35; border-radius:6px; color:#f5ecdc; }
+[data-design="walnut"] .hall-directions button[aria-pressed="true"] { color:#352a1e; }
+[data-design="walnut"] .hall-controls button { border-color:#bba27366; border-radius:6px; color:#ecdcbb; }
+[data-design="walnut"] .hall-controls button:hover { background:#5c4b35; }
+[data-design="walnut"] .museum-intro { border-color:#b49a6c; border-top-color:#8e7750; border-radius:12px; background:#faf4e7f5; }
+[data-design="walnut"] .museum-intro h2 { color:#655039; }
+[data-design="walnut"] .museum-intro button { border-radius:6px; }
+[data-design="walnut"] dialog { border-color:#a88b5b; border-radius:14px; }
+[data-design="walnut"] dialog > form { background:#e9deca; border-radius:7px 7px 0 0; }
+[data-design="walnut"] dialog::backdrop { background:#231e17ad; }
+
+:root[data-design="sci-fi"] { --paper:#edf2f5; --ink:#263945; --muted:#526976; --line:#a9bac4; --clay:#087f96; --petrol:#087f96; }
+:root[data-design="sci-fi"] .gallery-stage { background:#cbd5dc; }
+[data-design="sci-fi"] .museum-menu > summary { border-color:#7896a3; background:#e5edf1; color:#176f84; box-shadow:0 2px 14px #3149562b; }
+[data-design="sci-fi"] .museum-menu[open] > summary { background:#d2e3e9; }
+[data-design="sci-fi"] .mouse-look-control button { --look-bg:#e5edf1; --look-border:#7896a3; --look-ink:#176f84; --look-hover:#d2e3e9; --look-active:#087f96; --look-active-ink:#fff; border-radius:4px; }
+[data-design="sci-fi"] .museum-menu-panel { border-color:#8ea8b5; border-radius:8px; color:#263945; background:linear-gradient(145deg,#f7f9faF5,#dce5eaf5); box-shadow:0 18px 50px #283b462e; }
+[data-design="sci-fi"] .museum-menu-panel .brand-name,
+[data-design="sci-fi"] .museum-intro h2 { color:#087f96; }
+[data-design="sci-fi"] .museum-menu-panel .site-nav button { color:#263945; border-color:#a9bac4; }
+[data-design="sci-fi"] .museum-menu-panel .site-nav button:hover { background:#d8e8ed; }
+[data-design="sci-fi"] .museum-menu-panel .site-nav button:focus-visible,
+[data-design="sci-fi"] .design-control select:focus-visible { outline-color:#087f96; }
+[data-design="sci-fi"] .museum-menu-panel .site-footer { color:#526976; border-color:#b3c2ca; }
+[data-design="sci-fi"] .walk-controls { border-color:#91a9b5; border-radius:6px; background:#edf2f5f2; color:#263945; }
+[data-design="sci-fi"] .design-control { border-color:#a9bac4; }
+[data-design="sci-fi"] .design-control select { border-color:#8da5b0; border-radius:4px; background:#f7f9fa; color:#263945; }
+[data-design="sci-fi"] .gallery-stage[data-room] .tour-navigation { border-color:#91a9b5; border-radius:6px; background:#edf2f5ed; box-shadow:0 4px 20px #31495624; }
+[data-design="sci-fi"] .hall-directions button { --tab-ink:#087f96; --tab-paper:#cde7ec; border-radius:4px; color:#263945; }
+[data-design="sci-fi"] .hall-directions button[aria-pressed="true"] { color:#fff; }
+[data-design="sci-fi"] .hall-controls button { border-color:#8da5b0; border-radius:4px; color:#176f84; }
+[data-design="sci-fi"] .hall-controls button:hover { background:#d8e8ed; }
+[data-design="sci-fi"] #room-doors button,
+[data-design="sci-fi"] .door-wayfinding { border-color:#8399a4; background:linear-gradient(110deg,#dce5e9,#f2f5f6 48%,#d1dce1); color:#263945; box-shadow:0 3px 14px #31495638; }
+[data-design="sci-fi"] #room-doors button > span,
+[data-design="sci-fi"] .door-direction { color:#087f96; }
+[data-design="sci-fi"] #room-doors button:hover,
+[data-design="sci-fi"] .door-wayfinding:hover:not(:disabled) { border-color:#148da4; background:linear-gradient(110deg,#e7f0f3,#fff 48%,#dce8ec); }
+[data-design="sci-fi"] .door-wayfinding:disabled { color:#526976; }
+[data-design="sci-fi"] .museum-intro { border-color:#8ea8b5; border-top-color:#29b4cb; border-radius:6px; background:#edf2f5f5; color:#263945; box-shadow:0 8px 32px #3149562e; }
+[data-design="sci-fi"] .museum-intro button { border-color:#087f96; border-radius:4px; background:#087f96; }
+[data-design="sci-fi"] .museum-intro button:hover { background:#0b7188; }
+[data-design="sci-fi"] dialog { border-color:#8ea8b5; border-radius:6px; background:#edf2f5; color:#263945; }
+[data-design="sci-fi"] dialog > form { border-color:#a9bac4; background:#dce5ea; }
+[data-design="sci-fi"] dialog::backdrop { background:#27394470; }
+[data-design="sci-fi"] .close-button { color:#087f96; }
+[data-design="sci-fi"] .overview-list button:hover { color:#087f96; background:#d8e8ed; }
+
+/* Contemporary Japanese gallery: warm ivory paper and quiet forest-green ink. */
+:root[data-design="japanese"] { --paper:#faf5e9; --ink:#293c31; --muted:#596451; --line:#cfc9b6; --clay:#31513d; --petrol:#31513d; }
+[data-design="japanese"] .gallery-stage { background:#f1eadb; }
+[data-design="japanese"] .museum-menu > summary { border-color:#8b9a80; background:#faf5e9; color:#31513d; box-shadow:0 3px 16px #31403018; }
+[data-design="japanese"] .museum-menu[open] > summary { background:#e4e8da; }
+[data-design="japanese"] .mouse-look-control button { --look-bg:#faf5e9; --look-border:#8b9a80; --look-ink:#31513d; --look-hover:#e4e8da; --look-active:#31513d; --look-active-ink:#fffaf0; border-radius:4px; }
+[data-design="japanese"] .museum-menu-panel { border-color:#c6c5b1; border-radius:6px; background:#faf5e9fa; color:#293c31; box-shadow:0 14px 48px #31403026; font-family:Arial,Helvetica,sans-serif; }
+[data-design="japanese"] .museum-menu-panel .brand-name { color:#31513d; }
+[data-design="japanese"] .museum-menu-panel .site-nav button { color:#293c31; }
+[data-design="japanese"] .museum-menu-panel .site-nav button:hover { background:#e4e8da; }
+[data-design="japanese"] .museum-menu > summary:focus-visible,
+[data-design="japanese"] .museum-menu-panel .site-nav button:focus-visible,
+[data-design="japanese"] .design-control select:focus-visible { outline-color:#31513d; }
+[data-design="japanese"] .museum-menu-panel .site-footer { color:#596451; border-color:#cfc9b6; }
+[data-design="japanese"] .walk-controls { border-color:#bfc5af; border-radius:6px; background:#faf5e9f2; color:#293c31; }
+[data-design="japanese"] .design-control { border-color:#cfc9b6; }
+[data-design="japanese"] .design-control select { border-color:#8b9a80; border-radius:4px; background:#fffaf0; color:#293c31; font-size:14px; }
+[data-design="japanese"] .gallery-stage[data-room] .tour-navigation { border-color:#bfc5af; border-radius:6px; background:#faf5e9f2; box-shadow:0 4px 20px #31403018; }
+[data-design="japanese"] .hall-directions button { --tab-ink:#31513d; --tab-paper:#e0e7d6; border-radius:4px; color:#293c31; }
+[data-design="japanese"] .hall-directions button[aria-pressed="true"] { color:#fffaf0; }
+[data-design="japanese"] .hall-controls button { border-color:#a5af98; border-radius:4px; color:#31513d; }
+[data-design="japanese"] .hall-controls button:hover { background:#e4e8da; }
+[data-design="japanese"] #room-doors button,
+[data-design="japanese"] .door-wayfinding { border-color:#9ba88d; background:#faf5e9; color:#293c31; box-shadow:0 3px 14px #31403026; }
+[data-design="japanese"] #room-doors button > span,
+[data-design="japanese"] .door-direction { color:#31513d; }
+[data-design="japanese"] #room-doors button:hover,
+[data-design="japanese"] .door-wayfinding:hover:not(:disabled) { background:#e4e8da; border-color:#31513d; }
+[data-design="japanese"] .door-wayfinding:disabled { color:#596451; }
+[data-design="japanese"] .museum-intro { border-color:#bfc5af; border-top-color:#31513d; border-radius:6px; background:#faf5e9fa; color:#293c31; }
+[data-design="japanese"] .museum-intro h2 { color:#31513d; }
+[data-design="japanese"] .museum-intro button { border-color:#31513d; border-radius:4px; background:#31513d; color:#fffaf0; }
+[data-design="japanese"] .museum-intro button:hover { background:#243e2d; }
+[data-design="japanese"] dialog { border-color:#bfc5af; border-radius:6px; background:#faf5e9; color:#293c31; }
+[data-design="japanese"] dialog > form { border-color:#cfc9b6; background:#e4e8da; }
+[data-design="japanese"] dialog::backdrop { background:#263a2e90; }
+[data-design="japanese"] .close-button { color:#31513d; }
+[data-design="japanese"] .overview-list button:hover { color:#31513d; background:#e4e8da; }
+
+@media (prefers-reduced-transparency: reduce) {
+ :root[data-design] .museum-menu-panel, :root[data-design] .museum-intro, :root[data-design] .walk-controls,
+ :root[data-design] .gallery-stage[data-room] .tour-navigation { background:var(--paper); backdrop-filter:none; }
+ :root[data-design="walnut"] .museum-menu-panel,
+ :root[data-design="walnut"] .walk-controls,
+ :root[data-design="walnut"] .gallery-stage[data-room] .tour-navigation { background:#352e25; }
+ :root[data-design] dialog::backdrop { background:#302820; backdrop-filter:none; }
+}
+
+/* Both navigation rows share one button size and carry a caption naming their purpose. */
+.nav-caption { flex-basis:100%; margin:0 0 4px; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#5c5446; text-align:center; }
+[data-design="walnut"] .nav-caption { color:#d7c7a6; }
+[data-design="sci-fi"] .nav-caption { color:#3b5361; }
+.hall-controls { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:4px; width:100%; }
+.hall-controls .nav-caption { grid-column:1 / -1; }
+.hall-controls button, .hall-directions button { min-height:44px; padding:9px 12px; font-size:12px; line-height:1.2; }
+.hall-controls button { border-width:1px; border-style:dashed; }
+@media (max-width:600px) { .hall-controls button, .hall-directions button { padding-inline:8px; } }

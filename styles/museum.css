@@ -1,0 +1,351 @@
+/* Oberfläche, mobile Raumansichten und Projektdialoge. */
+/* Beim Lesen eines Pop-ups bleibt der Museumsraum an seiner bisherigen Position. */
+html:has(dialog[open]), body:has(dialog[open]) { overflow: hidden; }
+.skip-link { position: absolute; left: 20px; top: -60px; z-index: 10; padding: 12px; background: var(--ink); color: white; }
+.skip-link:focus { top: 10px; }
+.site-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; width: calc(100% - 64px); max-width: 1160px; min-height: 56px; margin: 20px auto 18px; }
+.brand { display: inline-block; text-decoration: none; }
+/* Direkte Zugänge in einer kleinen, schwebenden Navigationskapsel. */
+.site-nav { flex-wrap: nowrap; gap: 3px; padding: 5px; border: 1px solid #e0d9ce; border-radius: 999px; background: #fffdf8b3; box-shadow: 0 3px 14px #302a2010, inset 0 1px 0 #fff; }
+.site-nav button { min-height: 44px; padding: 10px 19px; border-radius: 999px; color: #4c4740; font-size: 12px; line-height: 1.3; text-decoration: none; white-space: nowrap; }
+.site-nav button:hover { background: #e9e4dbb3; color: var(--ink); }
+.site-nav button:focus-visible { outline-offset: 1px; }
+.site-nav button:disabled { opacity: .45; }
+#language-toggle { border: 1px solid var(--line); padding-inline: 11px; }
+body:has(#about-dialog[open]) #open-about { background: #e9e4db; color: var(--ink); }
+
+/* HTML-Trefferflächen ergänzen die WebGL-Szene. */
+.gallery-stage { position: relative; flex: 1; overflow: hidden; background: #e9e2d5; isolation: isolate; }
+#gallery-canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; touch-action: pan-y; }
+.museum-loading { position: absolute; z-index: 12; inset: 0; display: grid; place-items: center; padding: 24px; background: #f7f1e7; color: var(--ink); transition: opacity 280ms ease, visibility 280ms; }
+.museum-loading-panel { width: min(420px, 100%); padding: 32px; text-align: center; }
+.museum-loading h2 { margin: 10px 0 12px; font: 400 clamp(27px, 4vw, 42px)/1.15 Georgia, serif; letter-spacing: -.035em; }
+.museum-loading .eyebrow { color: #7a6650; }
+.museum-loading-hint { margin: 0 auto; max-width: 31rem; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.museum-loading-mark { display: flex; justify-content: center; gap: 7px; margin: 0 0 28px; }
+.museum-loading-mark span { width: 7px; height: 7px; border-radius: 50%; background: #7b654f; animation: museum-loading-pulse 1.25s ease-in-out infinite; }
+.museum-loading-mark span:nth-child(2) { animation-delay: 140ms; }
+.museum-loading-mark span:nth-child(3) { animation-delay: 280ms; }
+.gallery-stage.is-ready .museum-loading { opacity: 0; visibility: hidden; pointer-events: none; }
+.gallery-stage.has-startup-error .museum-loading { display: none; }
+.gallery-stage:not(.is-ready) .room-heading,
+.gallery-stage:not(.is-ready) .work-labels,
+.gallery-stage:not(.is-ready) .tour-navigation,
+.gallery-stage:not(.is-ready) #room-doors,
+.gallery-stage:not(.is-ready) #previous-room,
+.gallery-stage:not(.is-ready) .museum-intro,
+.gallery-stage:not(.is-ready) .mouse-look-control,
+.gallery-stage:not(.is-ready) .hall-display-hit { visibility: hidden; }
+.mouse-look-control { position: absolute; top: 24px; right: 80px; z-index: 3; max-width: min(320px, 70vw); }
+.mouse-look-control button { --look-bg: #fff5e6ed; --look-border: #b9956a99; --look-ink: #365e5b; --look-hover: #f0d2b9; --look-active: #365e5b; --look-active-ink: #fffaf0; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 15px; border: 1px solid var(--look-border); border-radius: 999px; background: var(--look-bg); color: var(--look-ink); box-shadow: 0 3px 16px #68482b1c, inset 0 1px #fffaf1; font-size: 12px; font-weight: 600; }
+.mouse-look-control button:hover:not(:disabled) { background: var(--look-hover); }
+.mouse-look-control button[aria-pressed="true"] { background: var(--look-active); color: var(--look-active-ink); }
+.mouse-look-control button:focus-visible { outline: 3px solid var(--look-ink); outline-offset: 3px; }
+.mouse-look-control button:disabled { opacity: .55; }
+.mouse-look-control p:not(:empty) { margin: 6px 0 0; padding: 8px; background: var(--paper); color: var(--ink); font-size: 12px; }
+body:has(.museum-menu[open]) .mouse-look-control { visibility: hidden; }
+@media (max-width: 600px) {
+  .mouse-look-control { top: auto; right: 16px; bottom: 150px; left: auto; }
+}
+@keyframes museum-loading-pulse { 0%, 70%, 100% { opacity: .28; transform: translateY(0); } 35% { opacity: 1; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) {
+  .museum-loading { transition: none; }
+  .museum-loading-mark span { animation: none; opacity: .75; }
+}
+.room-heading { position: absolute; top: calc(var(--scene-height, 540px) * .16); left: 12%; right: 12%; pointer-events: none; }
+#open-room-sign { padding: 0; border: 0; background: transparent; pointer-events: auto; text-align: left; }
+#open-room-sign:disabled { pointer-events: none; }
+#open-room-sign:focus { outline: none; }
+#open-room-sign:focus-visible { box-shadow: inset 0 -2px #aa5834; }
+.room-heading h1:focus { outline: none; }
+.room-heading > p:last-child { margin: 0; font-size: clamp(12px, 1vw, 16px); line-height: 1.6; color: var(--muted); }
+/* Wandbeschriftungen statt Karten: eine kurze Linie und linksbündiger Satz. */
+.work-label { --label-accent: #82796b; position: absolute; top: 0; left: 0; visibility: hidden; display: block; min-height: 44px; border: 0; background: transparent; padding: 12px 0 4px; text-align: left; }
+.work-label::before { content: ""; position: absolute; top: 0; left: 0; width: 28px; height: 1px; background: var(--label-accent); }
+.work-label strong { display: block; margin-bottom: 5px; font-size: clamp(13px, 1.05vw, 15px); font-weight: 500; line-height: 1.35; }
+.work-label > span { display: block; font-size: 11px; line-height: 1.55; color: #514d46; }
+.work-label > .work-medium { margin-bottom: 4px; color: var(--muted); font-size: 10px; line-height: 1.5; letter-spacing: .025em; }
+.work-label:hover strong, .work-label:focus-visible strong { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.work-label:focus-visible { outline-offset: 6px; }
+.work-labels { position: absolute; inset: 0; pointer-events: none; }
+.work-label { pointer-events: auto; }
+.room-heading, .work-labels { transition: opacity 140ms; }
+.is-travelling .room-heading, .is-travelling .work-labels { opacity: 0; }
+.is-travelling .work-label { pointer-events: none; visibility: hidden !important; }
+
+/* Die HTML-Schilder sitzen vor den 3D-Türen und bleiben mit der Tastatur erreichbar. */
+.gallery-stage[data-layout="hub"] .room-heading { top: calc(var(--scene-height, 540px) * .12); left: 10%; }
+.gallery-stage[data-layout="hub"] .room-heading > p { max-width: 34rem; }
+#room-doors { position: absolute; inset: 0; display: block; pointer-events: none; }
+#room-doors button {
+  position: absolute; left: var(--door-x, 50%); top: var(--door-y, 52%); transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: var(--door-label-width, 140px); min-height: 50px; padding: 9px 11px;
+  border: 1px solid #d4c8b5; border-radius: 3px; background: #f9f4e9;
+  box-shadow: 0 3px 12px #211d193c; text-align: left; text-decoration: none;
+  pointer-events: auto;
+}
+#room-doors strong { font-family: Georgia, serif; font-size: clamp(15px, 1.22vw, 19px); font-weight: 400; line-height: 1.15; overflow-wrap: anywhere; }
+#room-doors button > span { color: #6d5640; font-size: 19px; flex: none; }
+#room-doors button:hover { background: #fffdf7; border-color: #97654a; }
+.is-travelling #room-doors { visibility: hidden; }
+/* Nur Raum 1: Museum mit einer leisen technischen Note. */
+.gallery-stage[data-theme="research"] .eyebrow { color: #526a76; font-family: "Courier New", monospace; letter-spacing: .055em; }
+.gallery-stage[data-theme="research"] .room-heading .eyebrow::before { content: ""; display: inline-block; width: 18px; height: 2px; margin: 0 9px 3px 0; background: #8aaebf; }
+.gallery-stage[data-theme="research"] h1 em { color: #4b6978; }
+.gallery-stage[data-theme="research"] .work-label { --label-accent: #708e9d; }
+.gallery-stage[data-theme="research"] .work-medium { color: #526b78; font-family: "Courier New", monospace; letter-spacing: 0; }
+.gallery-stage[data-theme="research"] { --wayfinding-accent: #526a76; }
+/* Raum 2: eine elegante Spielarena mit warmen Bronze- und Terrakotta-Akzenten. */
+.gallery-stage[data-theme="arena"] .room-heading .eyebrow { color: #80663f; letter-spacing: .12em; }
+.gallery-stage[data-theme="arena"] .room-heading .eyebrow::before { content: ""; display: inline-block; width: 18px; height: 1px; margin: 0 10px 5px 0; background: #b99a60; box-shadow: 0 4px #b99a60; }
+.gallery-stage[data-theme="arena"] h1 em { color: #9e6745; }
+.gallery-stage[data-theme="arena"] .work-label { --label-accent: #9b7a45; }
+.gallery-stage[data-theme="arena"] .work-medium { color: #80663f; }
+.gallery-stage[data-theme="arena"] .work-label .work-medium { display: none; }
+.gallery-stage[data-theme="arena"] { --wayfinding-accent: #80663f; }
+/* Raum 3: eine ruhige Werkstatt für Pixelgrafik. */
+.gallery-stage[data-theme="workshop"] .room-heading .eyebrow { color: #52697a; letter-spacing: .1em; }
+.gallery-stage[data-theme="workshop"] .room-heading .eyebrow::before { content: ""; display: inline-block; width: 4px; height: 4px; margin: 0 20px 3px 0; background: #a794b6; box-shadow: 6px -4px #a794b6, 12px 0 #a794b6; }
+.gallery-stage[data-theme="workshop"] h1 em { color: #766381; }
+.gallery-stage[data-theme="workshop"] .work-label { --label-accent: #8b759b; }
+.gallery-stage[data-theme="workshop"] .work-medium { color: #52697a; font-family: "Courier New", monospace; letter-spacing: 0; }
+.gallery-stage[data-theme="workshop"] .work-label .work-medium { display: none; }
+.gallery-stage[data-theme="workshop"] { --wayfinding-accent: #52697a; }
+/* Raum 4: Sammlungskabinett mit warmem Papier und dunklem Nussbaum. */
+.gallery-stage[data-theme="cabinet"] .room-heading .eyebrow { color: #78624a; letter-spacing: .14em; }
+.gallery-stage[data-theme="cabinet"] h1 em { color: #855b4b; }
+.gallery-stage[data-theme="cabinet"] .work-label { --label-accent: #947354; }
+.gallery-stage[data-theme="cabinet"] .work-label strong { font-family: Georgia, serif; font-size: clamp(13px, 1.15vw, 17px); }
+.gallery-stage[data-theme="cabinet"] .work-medium { color: #78624a; }
+.gallery-stage[data-theme="cabinet"] { --wayfinding-accent: #78624a; }
+/* Raum 5: Petrol und Grün aus Cargonaut / Esuap. */
+.gallery-stage[data-theme="studio"] .room-heading .eyebrow { color: #306b71; letter-spacing: .11em; }
+.gallery-stage[data-theme="studio"] .room-heading .eyebrow::before { content: ""; display: inline-block; width: 20px; height: 3px; margin: 0 9px 3px 0; background: #7cac56; }
+.gallery-stage[data-theme="studio"] h1 em { color: #306b71; }
+.gallery-stage[data-theme="studio"] .work-label { --label-accent: #638c45; }
+.gallery-stage[data-theme="studio"] .work-medium { color: #306b71; }
+.gallery-stage[data-theme="studio"] .work-label .work-medium { display: none; }
+.gallery-stage[data-theme="studio"] { --wayfinding-accent: #306b71; }
+/* Raum 6: drei Beiträge in einem hellen Atelier. */
+.gallery-stage[data-theme="atelier"] .room-heading .eyebrow { color: #566875; letter-spacing: .12em; }
+.gallery-stage[data-theme="atelier"] .room-heading .eyebrow::before { content: ""; display: inline-block; width: 6px; height: 3px; margin: 0 24px 3px 0; background: #94a494; box-shadow: 9px 0 #849dab, 18px 0 #bf927a; }
+.gallery-stage[data-theme="atelier"] h1 em { color: #607b8a; }
+.gallery-stage[data-theme="atelier"] .work-label { --label-accent: #738873; }
+.gallery-stage[data-theme="atelier"] .work-label:nth-child(2) { --label-accent: #718d9c; }
+.gallery-stage[data-theme="atelier"] .work-label:nth-child(3) { --label-accent: #a4775f; }
+.gallery-stage[data-theme="atelier"] .work-medium { color: #566875; }
+.gallery-stage[data-theme="atelier"] { --wayfinding-accent: #566875; }
+/* Raum 7: ein gemeinsames Raster und drei zusammengehörige Werkgruppen. */
+.gallery-stage[data-theme="print"] .room-heading { top: calc(var(--scene-height, 540px) * .12); left: var(--print-grid-left, 12%); }
+.gallery-stage[data-theme="print"] .room-heading .eyebrow { color: #424345; font-family: "Courier New", monospace; letter-spacing: .06em; }
+.gallery-stage[data-theme="print"] .room-heading .eyebrow::before { content: ""; display: inline-block; width: 16px; height: 1px; margin: 0 10px 4px 0; background: #686a68; }
+.gallery-stage[data-theme="print"] h1 { font-weight: 700; letter-spacing: -.055em; }
+.gallery-stage[data-theme="print"] h1 em { color: #292a2b; font-family: Arial, sans-serif; font-weight: 700; font-style: normal; }
+.gallery-stage[data-theme="print"] .work-label { --label-accent: #646562; }
+.gallery-stage[data-theme="print"] .work-medium { display: none; }
+.gallery-stage[data-theme="print"] { --wayfinding-accent: #424345; }
+/* Raum 8: ein ruhiger Fotosalon; die Bilder bestimmen Höhe und Abstände. */
+.gallery-stage[data-theme="photo"] .room-heading { left: var(--photo-grid-left, 12%); }
+.gallery-stage[data-theme="photo"] .room-heading .eyebrow { color: #626659; letter-spacing: .16em; }
+.gallery-stage[data-theme="photo"] h1 { font-family: Georgia, serif; letter-spacing: -.035em; }
+.gallery-stage[data-theme="photo"] h1 em { color: #626659; }
+.gallery-stage[data-theme="photo"] .work-label { --label-accent: #777c6e; }
+.gallery-stage[data-theme="photo"] .work-label strong { font-family: Georgia, serif; font-size: clamp(14px, 1.1vw, 16px); }
+.gallery-stage[data-theme="photo"] .work-medium { display: none; }
+.gallery-stage[data-theme="photo"] { --wayfinding-accent: #626659; }
+/* Helle Türplaketten: lesbares HTML, an die räumliche Türposition gekoppelt. */
+.door-wayfinding { position: absolute; top: var(--door-top, calc(var(--scene-height, 540px) * .34)); width: 94px; min-height: 44px; padding: 12px 11px 13px; border: 1px solid #c9c4b9; border-radius: 5px; background: #fbfaf4; color: var(--ink); text-align: left; box-shadow: 1px 2px 0 #aaa69b66, 0 4px 10px #29272012; transition: opacity 140ms; }
+.back-sign { left: var(--door-left, 16px); width: 118px; }
+.door-direction { display: flex; align-items: center; justify-content: space-between; gap: 5px; color: var(--wayfinding-accent, var(--muted)); font-size: 8px; line-height: 1.4; letter-spacing: .065em; text-transform: uppercase; }
+.door-arrow { flex: none; font-size: 16px; line-height: 1; }
+.door-wayfinding strong { display: block; margin: 5px 0 0; font-family: Georgia, serif; font-size: 16px; line-height: 1.15; font-weight: 400; overflow-wrap: anywhere; }
+.door-wayfinding:hover:not(:disabled) { background: #fffefa; border-color: var(--wayfinding-accent, #82796b); }
+.door-wayfinding:hover:not(:disabled) .door-arrow { color: var(--ink); }
+.door-wayfinding:focus-visible { outline-offset: 4px; }
+.door-wayfinding:disabled { color: #655f56; box-shadow: 1px 1px 0 #aaa69b44; }
+.is-travelling .door-wayfinding { opacity: 0; pointer-events: none; }
+.gallery-status:has(#gallery-status[hidden]) { display: none; }
+.gallery-status p { margin: 0; }
+.catalogue-link { display: inline-block; margin-top: 12px; padding: 8px 2px; }
+.gallery-status { position: absolute; top: 51%; left: 12%; right: 12%; margin: 0; padding: 18px; max-width: 560px; background: var(--paper); border: 1px solid var(--line); font-size: 14px; line-height: 1.7; }
+/* Eine schwebende Glasleiste über dem echten Galerieboden. */
+.tour-navigation { position: absolute; z-index: 2; left: 50%; bottom: 24px; transform: translateX(-50%); width: calc(100% - 64px); max-width: 1160px; padding: 20px 28px 14px; border: 1px solid #ffffffb3; border-radius: 24px; background: #faf8f1df; box-shadow: 0 12px 34px #28241c24, 0 2px 6px #28241c0a, inset 0 1px 0 #fff; }
+@supports (backdrop-filter: blur(10px)) {
+  .tour-navigation { background: #faf8f1bd; backdrop-filter: blur(10px) saturate(1.1); }
+  /* Während der Fahrt bleibt die Glasfläche günstig zu zeichnen. */
+  .is-travelling .tour-navigation { background: #faf8f1df; backdrop-filter: none; }
+}
+.tour-details { display: flex; align-items: center; justify-content: flex-end; margin-top: 8px; }
+.site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 17px 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.6; }
+.file-notice { position: fixed; z-index: 50; left: 16px; right: 16px; bottom: 16px; max-height: calc(100dvh - 32px); overflow-y: auto; margin: 0; padding: 20px 32px; background: #f0e3d0; font-size: 14px; line-height: 1.7; }
+
+/* 3. Lesbare Nahansicht mit normalem HTML und nativem Dialog-Verhalten. */
+dialog { width: min(1040px, calc(100% - 32px)); max-height: calc(100svh - 40px); padding: 10px; overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px #18161240, 0 6px 20px #1816121a; }
+dialog[open] { display: flex; flex-direction: column; }
+dialog::backdrop { background: #181612a6; }
+#sign-dialog { width: min(36rem, calc(100% - 32px)); }
+#sign-dialog .dialog-scroll { padding-bottom: clamp(22px, 5vw, 40px); }
+#sign-dialog h2 { margin: 8px 0 14px; overflow-wrap: anywhere; }
+#sign-description { margin: 0; font-size: clamp(17px, 4vw, 23px); line-height: 1.55; }
+dialog > form { flex: none; margin: 0; padding: 18px 22px 25px; }
+/* Der Scrollbalken liegt eingerückt innerhalb des festen, runden Fensterrahmens. */
+.dialog-scroll { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 0 22px 28px; scrollbar-width: thin; scrollbar-color: #77726880 transparent; }
+.dialog-scroll:hover, .dialog-scroll:focus-within { scrollbar-color: #777268b3 transparent; }
+.dialog-scroll:focus-visible { outline: 2px solid #aa5834; outline-offset: -2px; border-radius: 8px; }
+/* Chromium und Safari: runder Griff ohne Pfeiltasten; Firefox nutzt die native dünne Leiste. */
+@supports selector(::-webkit-scrollbar) {
+  .dialog-scroll, .dialog-scroll:hover, .dialog-scroll:focus-within { scrollbar-width: auto; scrollbar-color: auto; }
+}
+.dialog-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.dialog-scroll::-webkit-scrollbar-track { margin-block: 6px; background: transparent; }
+.dialog-scroll::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+.dialog-scroll::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: #77726880; background-clip: padding-box; }
+.dialog-scroll::-webkit-scrollbar-thumb:hover { background-color: #777268b3; }
+@media (forced-colors: active) {
+  .dialog-scroll { scrollbar-color: auto; }
+}
+dialog h2 { margin: 10px 0 25px; font-size: clamp(28px, 3vw, 42px); font-weight: 400; line-height: 1.15; letter-spacing: -.04em; }
+.overview-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; }
+.overview-layout h3 { font-size: 14px; font-weight: 400; }
+.overview-list { display: flex; flex-direction: column; }
+.overview-list button { text-align: left; padding: 18px 0; border: 0; border-top: 1px solid var(--line); background: transparent; font-size: 14px; line-height: 1.5; }
+.overview-list button:hover { color: #964f2e; }
+.room-tree, .room-tree ul { list-style: none; margin: 0; padding: 0; }
+.room-tree ul { margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--line); }
+.room-tree button { width: 100%; padding: 12px 6px; }
+.room-tree button[aria-current] { font-weight: 700; }
+
+/* Die Werke werden auf schmalen Fenstern im Raum untereinander gehängt. */
+@media (max-width: 900px) {
+  .site-header { width: calc(100% - 40px); align-items: center; flex-direction: column; margin: 18px auto 20px; gap: 18px; }
+  .brand { align-self: flex-start; }
+  .site-nav { align-self: stretch; display: grid; grid-template-columns: 1fr 1fr 1.6fr auto; gap: 3px; padding: 4px; }
+  .site-nav button { padding: 10px 8px; white-space: normal; }
+  .gallery-stage[data-theme="print"] .room-heading { left: 10%; right: 10%; }
+  .gallery-stage[data-layout="hub"] .room-heading { top: 36px; left: 8%; }
+  #room-doors { display: grid; grid-template-columns: 1fr; align-content: start; gap: 10px; inset: 170px 8% auto; max-height: calc(100% - 186px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; pointer-events: auto; }
+  #room-doors button { position: static; transform: none; width: 100%; min-height: 54px; padding: 9px 14px; }
+  #room-doors strong { font-size: 17px; }
+  .gallery-stage:has(#room-doors :focus-visible) .tour-navigation { opacity: 0; pointer-events: none; transition: none; }
+  .gallery-stage[data-theme="photo"] .room-heading { top: calc(var(--scene-height, 1600px) * .12); left: 10%; right: 10%; }
+  .room-heading { top: calc(var(--scene-height, 940px) * .14); left: 10%; right: 10%; }
+  .gallery-stage[data-theme="workshop"] .room-heading { top: calc(var(--scene-height, 1240px) * .12); }
+  .room-heading .eyebrow { font-size: 11px; letter-spacing: .045em; }
+  .room-heading > p:last-child { font-size: 13px; }
+  .work-label { padding: 12px 0 4px; }
+  .work-label strong { font-size: 13px; }
+  .work-label > span { font-size: 11px; }
+  .door-wayfinding { top: 12px; width: min(175px, calc(100% - 32px)); padding: 9px 12px; }
+  .back-sign { left: 16px; }
+  .door-direction { font-size: 8px; letter-spacing: .02em; }
+  .tour-navigation { width: calc(100% - 32px); padding: 20px 20px 14px; border-radius: 22px; background: #faf8f1df; backdrop-filter: none; }
+  .tour-details { align-items: flex-start; flex-direction: column; margin-top: 12px; }
+  .site-footer { padding: 16px 22px; }
+  .file-notice { padding: 20px 22px; }
+  dialog { padding: 8px; border-radius: 20px; }
+  dialog > form { padding: 15px 15px 25px; }
+  .dialog-scroll { padding: 0 15px 15px; }
+  .overview-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .tour-navigation { background: #faf8f1f5; backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-heading, .work-labels, .door-wayfinding { transition: none; }
+}
+
+/* Dark lettering keeps the muted category walls readable in daylight and shade. */
+.gallery-stage:is([data-room="games"], [data-room="photos"], [data-room="web-design"]) {
+  --muted: #353a35;
+}
+.gallery-stage[data-room="photos"] .room-heading .eyebrow,
+.gallery-stage[data-room="photos"] h1 em,
+.gallery-stage[data-room="photos"] .work-label > span { color: #3d342e; }
+
+/* The canvas supplies painted text; these native controls supply interaction semantics. */
+
+  .has-wall-lettering .room-heading,
+  .has-wall-lettering .room-heading *,
+  .has-wall-lettering .work-label,
+  .has-wall-lettering .work-label * { color: transparent !important; text-shadow: none; }
+  .has-wall-lettering .room-heading { right: auto; background: transparent; border: 0; box-shadow: none; border-radius: 0; }
+  .has-wall-lettering #open-room-sign { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .has-wall-lettering #open-room-sign::before,
+  .has-wall-lettering .work-label::before { display: none; }
+  .has-wall-lettering .work-label:hover { background: #ffffff0d; }
+
+
+/* The HTML fallback follows the same hierarchy as the painted gallery lettering. */
+.gallery-stage:is([data-room="lobby"], [data-room="games"], [data-room="photos"], [data-room="web-design"]) .room-heading {
+  & h1, & h1 em { font-family: Georgia, serif; font-style: normal; font-weight: 400; letter-spacing: -.025em; }
+  & h1 { margin-top: 0; margin-bottom: 18px; line-height: 1.18; }
+  & > p:last-child { letter-spacing: .015em; }
+  & #open-room-sign { position: absolute; inset: 0; width: 100%; height: 100%; color: transparent; font-size: 0; }
+}
+
+/* A single hall: navigation moves between viewpoints without fading the scene. */
+.is-common-hall #room-doors, .is-common-hall #previous-room { display: none !important; }
+.is-common-hall[data-layout="hub"] .room-heading { top: 28px; left: 32px; padding: 0; background: transparent; border-radius: 0; width: max-content; max-width: 70%; }
+.hall-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.hall-controls button { min-width: 44px; min-height: 44px; padding: 10px 14px; border: 1px solid #c4c6bb; border-radius: 7px; text-decoration: none; background: #faf9f3; font-size: 12px; }
+.hall-controls button:disabled { cursor: default; opacity: .55; }
+.is-common-hall .tour-details { display: flex; align-items: center; gap: 22px; }
+
+/* Section navigation; viewport placement lives in immersive.css. */
+.room-heading > .room-intro, .work-label > .work-role { display: none; }
+.gallery-stage[data-room="lobby"] .room-heading,
+.gallery-stage[data-layout="graphic-wall"] .room-heading:not(:has(button:focus-visible)) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+.gallery-stage[data-room="lobby"] .hall-controls { display: none; }
+.gallery-stage[data-theme] .work-label > .work-medium { display: block; }
+#hall-welcome { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 24px; margin-bottom: 14px; }
+.gallery-stage[data-room="lobby"] #hall-welcome { margin-bottom: 0; }
+.hall-directions { display: flex; justify-content: center; gap: 6px; padding: 4px; border: 1px solid #cdd0c3; border-radius: 9px; background: #eeeee5; }
+.hall-directions button { min-height: 44px; padding: 10px 20px; font-size: 13px; text-decoration: none; border-radius: 6px; }
+.hall-directions button:hover { background: #dfe2d4; }
+.hall-directions button[aria-pressed="true"] { background: #44513d; color: #fffdf5; }
+@media (max-width: 600px) {
+  .hall-directions button { flex: 1; padding: 10px 8px; }
+  .is-common-hall .tour-details { flex-wrap: wrap; gap: 12px; }
+}
+
+.hall-display-hit { position: absolute; z-index: 1; padding: 0; border: 0; background: transparent; }
+.hall-display-hit:focus-visible { outline: 2px solid #91643f; outline-offset: 5px; }
+
+/* Compact wall plaques in the HTML/mobile presentation; WebGL controls stay clear. */
+.gallery-stage:not(.has-wall-lettering) .work-label {
+  padding: 6px 8px; background: #f6f4ed; color: #252824;
+  border: 1px solid #d5d2c9; border-radius: 1px;
+  box-shadow: 1px 2px 3px #25251c24;
+}
+.gallery-stage:not(.has-wall-lettering) .work-label::before { display: none; }
+.gallery-stage:not(.has-wall-lettering) .work-label > span { color: #565b53; }
+
+.gallery-stage:not(.has-wall-lettering) .work-label strong { font-family: Arial, sans-serif; font-size: 12px; line-height: 1.2; margin-bottom: 3px; }
+.gallery-stage:not(.has-wall-lettering) .work-label > .work-medium { font-size: 10px; line-height: 1.4; margin-bottom: 0; }
+
+.gallery-stage:is([data-room="photos"], [data-layout="graphic-wall"]) .work-label {
+  padding: 0; border: 0; background: transparent; box-shadow: none;
+}
+.gallery-stage:is([data-room="photos"], [data-layout="graphic-wall"]) .work-label,
+.gallery-stage:is([data-room="photos"], [data-layout="graphic-wall"]) .work-label * { color: transparent !important; text-shadow: none; }
+.gallery-stage:is([data-room="photos"], [data-layout="graphic-wall"]) .work-label::before { display: none; }
+
+.catalogue-group { display: flex; flex-direction: column; margin-bottom: 18px; }
+.catalogue-group h4 { margin: 14px 0 8px; font-size: 12px; letter-spacing: .035em; color: var(--muted); }
+
+.photo-browser { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 24px; }
+.photo-browser button { border:1px solid var(--line); border-radius:4px; padding:10px 14px; background:transparent; color:var(--ink); font:inherit; cursor:pointer; }
+.photo-browser button:disabled { opacity:.35; cursor:default; }
+.photo-browser span { flex:none; color:var(--muted); font-size:12px; }
+.is-photo-view .detail-layout { display:block; }
+.is-photo-view .detail-image { width:100%; max-height:68vh; object-fit:contain; }
+.is-photo-view .detail-copy { max-width:65ch; margin-top:24px; }
+@media(max-width:600px) { .photo-browser { gap:8px; } .photo-browser button { max-width:42%; font-size:12px; padding:9px; } }
+
+.hall-directions { flex-wrap:wrap; }
+@media (max-width:900px) { .gallery-stage[data-room="process"] .room-heading .eyebrow { margin:0; height:0; } .gallery-stage[data-room="process"] #open-room-sign { position:absolute; inset:0; width:100%; height:100%; color:transparent; font-size:0; } }
+
+/* Soft lens vignette over the WebGL hall; it never intercepts input. */
+.is-common-hall::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 50% 46%, transparent 58%, #1f1a1438 100%); }
+@media (forced-colors: active) { .is-common-hall::after { display: none; } }
