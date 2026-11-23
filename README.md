@@ -2,7 +2,7 @@
 
 Welcome to my virtual museum, an exhibition of my work in games, photography, web design and graphic design.
 
-Choose a section to explore, move through the museum with the keyboard or touch controls, and open artworks to learn more. The exhibition is available in English and German. You can also browse the work catalogue without 3D.
+[Visit the museum](https://pascal-meier.github.io/personal-museum/), choose a section to explore, move with the keyboard or touch controls, and open artworks to learn more. The exhibition is available in English and German. You can also browse the [work catalogue](https://pascal-meier.github.io/personal-museum/exhibition.html) without 3D.
 
 ## Technology
 
